@@ -1,22 +1,877 @@
 [
-  ["שלום", "ሰላም", "selam"],
-  ["תודה", "አመሰግናለሁ", "ameseginalehu"],
-  ["בבקשה", "እባክዎ", "ebakwo"],
-  ["כן", "አዎ", "awo"],
-  ["לא", "አይ", "ay"],
-  ["בוקר טוב", "እንደምን አደሩ", "endemen aderu"],
-  ["לילה טוב", "ደህና ይሁኑ", "dehna yihunu"],
-  ["מה שלומך?", "እንዴት ነህ?", "endet neh?"],
-  ["אני שמח", "ደስተኛ ነኝ", "destenha neny"],
-  ["אני רעב", "ተርቤአለሁ", "terbealehu"],
-  ["מים", "ውሃ", "weha"],
-  ["אוכל", "ምግብ", "migib"],
-  ["בית", "ቤት", "bet"],
-  ["ללכת", "መሄድ", "mehed"],
-  ["אמא", "እናት", "enat"],
-  ["אבא", "አባት", "abat"],
-  ["ילד", "ልጅ", "lij"],
-  ["ילדה", "ልጅ", "lij"],
-  ["איש", "ሰው", "sew"],
-  ["אישה", "ሴት", "set"]
+  {
+    "hebrew": "אבא",
+    "amharic": "አባት",
+    "transliteration": "Abat"
+  },
+  {
+    "hebrew": "מתבייש",
+    "amharic": "አፍራሽ ነኝ",
+    "transliteration": "Afrash Neny"
+  },
+  {
+    "hebrew": "עכשיו",
+    "amharic": "አሁን",
+    "transliteration": "Ahun"
+  },
+  {
+    "hebrew": "בדיוק עכשיו",
+    "amharic": "አሁን ነው",
+    "transliteration": "Ahun New"
+  },
+  {
+    "hebrew": "בגדים",
+    "amharic": "አልባሳት",
+    "transliteration": "Albasat"
+  },
+  {
+    "hebrew": "מעביד",
+    "amharic": "አለቃ",
+    "transliteration": "Aleqa"
+  },
+  {
+    "hebrew": "שנה",
+    "amharic": "ዓመት",
+    "transliteration": "Amet"
+  },
+  {
+    "hebrew": "חמש",
+    "amharic": "አምስት",
+    "transliteration": "Amist"
+  },
+  {
+    "hebrew": "את",
+    "amharic": "አንቺ",
+    "transliteration": "Anchi"
+  },
+  {
+    "hebrew": "אחד",
+    "amharic": "አንድ",
+    "transliteration": "And"
+  },
+  {
+    "hebrew": "לפעמים",
+    "amharic": "አንዳንድ ጊዜ",
+    "transliteration": "Andand Gize"
+  },
+  {
+    "hebrew": "רגע",
+    "amharic": "አንደኛ ጊዜ",
+    "transliteration": "Andegna Gize"
+  },
+  {
+    "hebrew": "אתה",
+    "amharic": "አንተ",
+    "transliteration": "Ante"
+  },
+  {
+    "hebrew": "ארבע",
+    "amharic": "አራት",
+    "transliteration": "Arat"
+  },
+  {
+    "hebrew": "רבע שעה",
+    "amharic": "አራት ደቂቃ",
+    "transliteration": "Arat Deqiqa"
+  },
+  {
+    "hebrew": "ארבעים",
+    "amharic": "አርባ",
+    "transliteration": "Arba"
+  },
+  {
+    "hebrew": "מאוכזב",
+    "amharic": "አሳፋሪ ነኝ",
+    "transliteration": "Asafari Neny"
+  },
+  {
+    "hebrew": "עשר",
+    "amharic": "አስር",
+    "transliteration": "Asir"
+  },
+  {
+    "hebrew": "עשור",
+    "amharic": "አስር ዓመት",
+    "transliteration": "Asir Amet"
+  },
+  {
+    "hebrew": "אוטובוס",
+    "amharic": "አውቶቡስ",
+    "transliteration": "Awetobus"
+  },
+  {
+    "hebrew": "סבא",
+    "amharic": "አያት",
+    "transliteration": "Ayat"
+  },
+  {
+    "hebrew": "עצוב",
+    "amharic": "አዝኛለሁ",
+    "transliteration": "Aznalhu"
+  },
+  {
+    "hebrew": "רכבת",
+    "amharic": "ባቡር",
+    "transliteration": "Babur"
+  },
+  {
+    "hebrew": "בעוד רגע",
+    "amharic": "በአንድ ጊዜ",
+    "transliteration": "Be And Gize"
+  },
+  {
+    "hebrew": "בעוד יומיים",
+    "amharic": "በሁለት ቀናት",
+    "transliteration": "Be Hulet Qenat"
+  },
+  {
+    "hebrew": "אף פעם",
+    "amharic": "በፍጹም አይደለም",
+    "transliteration": "Befets’um Aydellem"
+  },
+  {
+    "hebrew": "לפני",
+    "amharic": "በፊት",
+    "transliteration": "Befit"
+  },
+  {
+    "hebrew": "מהר",
+    "amharic": "በፍጥነት",
+    "transliteration": "Befits’enet"
+  },
+  {
+    "hebrew": "לאט",
+    "amharic": "በቀስታ",
+    "transliteration": "Beqesta"
+  },
+  {
+    "hebrew": "בית",
+    "amharic": "ቤት",
+    "transliteration": "Bet"
+  },
+  {
+    "hebrew": "משפחה",
+    "amharic": "ቤተሰብ",
+    "transliteration": "Beteseb"
+  },
+  {
+    "hebrew": "אחרי",
+    "amharic": "በኋላ",
+    "transliteration": "Bewala"
+  },
+  {
+    "hebrew": "מאוחר יותר",
+    "amharic": "በኋላ ብሎ",
+    "transliteration": "Bewala Bilo"
+  },
+  {
+    "hebrew": "תיק",
+    "amharic": "ቦርሳ",
+    "transliteration": "Borsa"
+  },
+  {
+    "hebrew": "קפה",
+    "amharic": "ቡና",
+    "transliteration": "Buna"
+  },
+  {
+    "hebrew": "כרטיס",
+    "amharic": "ካርድ",
+    "transliteration": "Card"
+  },
+  {
+    "hebrew": "לחוץ",
+    "amharic": "ጭንቀት ነኝ",
+    "transliteration": "Ch’enqet Neny"
+  },
+  {
+    "hebrew": "נעליים",
+    "amharic": "ጫማ",
+    "transliteration": "Chama"
+  },
+  {
+    "hebrew": "לחם",
+    "amharic": "ዳቦ",
+    "transliteration": "Dabo"
+  },
+  {
+    "hebrew": "משכורת",
+    "amharic": "ደመወዝ",
+    "transliteration": "Demewoz"
+  },
+  {
+    "hebrew": "לקוח",
+    "amharic": "ደንበኛ",
+    "transliteration": "Denbegna"
+  },
+  {
+    "hebrew": "דקה",
+    "amharic": "ደቂቃ",
+    "transliteration": "Deqiqa"
+  },
+  {
+    "hebrew": "שמח",
+    "amharic": "ደስ ይላል",
+    "transliteration": "Des Yilal"
+  },
+  {
+    "hebrew": "עייף",
+    "amharic": "ድካም ነኝ",
+    "transliteration": "Dikam Neny"
+  },
+  {
+    "hebrew": "אחות",
+    "amharic": "እኅት",
+    "transliteration": "Ehit"
+  },
+  {
+    "hebrew": "חצות",
+    "amharic": "እኩለ ሌሊት",
+    "transliteration": "Ekele Lelit"
+  },
+  {
+    "hebrew": "אתן",
+    "amharic": "እናንቺ",
+    "transliteration": "Enanchi"
+  },
+  {
+    "hebrew": "אתם",
+    "amharic": "እናንተ",
+    "transliteration": "Enante"
+  },
+  {
+    "hebrew": "אמא",
+    "amharic": "እናት",
+    "transliteration": "Enat"
+  },
+  {
+    "hebrew": "איך",
+    "amharic": "እንዴት",
+    "transliteration": "Endet"
+  },
+  {
+    "hebrew": "מתרגש",
+    "amharic": "እንቁላል ነኝ",
+    "transliteration": "Enqulal Neny"
+  },
+  {
+    "hebrew": "גרוש",
+    "amharic": "ፍች",
+    "transliteration": "Fich"
+  },
+  {
+    "hebrew": "אהבה",
+    "amharic": "ፍቅር",
+    "transliteration": "Fikir"
+  },
+  {
+    "hebrew": "שוק",
+    "amharic": "ገበያ",
+    "transliteration": "Gebeya"
+  },
+  {
+    "hebrew": "כסף",
+    "amharic": "ገንዘብ",
+    "transliteration": "Genzeb"
+  },
+  {
+    "hebrew": "חצי שעה",
+    "amharic": "ግማሽ ሰዓት",
+    "transliteration": "Gmash Se'at"
+  },
+  {
+    "hebrew": "חבר",
+    "amharic": "ጓደኛ",
+    "transliteration": "Gwadegna"
+  },
+  {
+    "hebrew": "חברה",
+    "amharic": "ጓደኛ",
+    "transliteration": "Gwadegna"
+  },
+  {
+    "hebrew": "בוס",
+    "amharic": "ኃላፊ",
+    "transliteration": "Halafi"
+  },
+  {
+    "hebrew": "חמישים",
+    "amharic": "ሃምሳ",
+    "transliteration": "Hamsa"
+  },
+  {
+    "hebrew": "משפט",
+    "amharic": "ሐረግ",
+    "transliteration": "Hareg"
+  },
+  {
+    "hebrew": "עשרים",
+    "amharic": "ሃያ",
+    "transliteration": "Haya"
+  },
+  {
+    "hebrew": "בית חולים",
+    "amharic": "ሆስፒታል",
+    "transliteration": "Hospital"
+  },
+  {
+    "hebrew": "תמיד",
+    "amharic": "ሁል ጊዜ",
+    "transliteration": "Hul Gize"
+  },
+  {
+    "hebrew": "שתיים",
+    "amharic": "ሁለት",
+    "transliteration": "Hulet"
+  },
+  {
+    "hebrew": "אלפיים",
+    "amharic": "ሁለት ሺ",
+    "transliteration": "Hulet Shi"
+  },
+  {
+    "hebrew": "כל יום",
+    "amharic": "ሁሉም ቀን",
+    "transliteration": "Hulume Qen"
+  },
+  {
+    "hebrew": "אני",
+    "amharic": "እኔ",
+    "transliteration": "Ine"
+  },
+  {
+    "hebrew": "הם",
+    "amharic": "እነሱ",
+    "transliteration": "Inesu"
+  },
+  {
+    "hebrew": "הן",
+    "amharic": "እነሷ",
+    "transliteration": "Inesua"
+  },
+  {
+    "hebrew": "אנחנו",
+    "amharic": "እኛ",
+    "transliteration": "Inya"
+  },
+  {
+    "hebrew": "הוא",
+    "amharic": "እሱ",
+    "transliteration": "Isu"
+  },
+  {
+    "hebrew": "היא",
+    "amharic": "እሷ",
+    "transliteration": "Isua"
+  },
+  {
+    "hebrew": "מילה",
+    "amharic": "ቃል",
+    "transliteration": "Kal"
+  },
+  {
+    "hebrew": "לפני שבוע",
+    "amharic": "ከአንድ ሳምንት በፊት",
+    "transliteration": "Ke And Sament Befit"
+  },
+  {
+    "hebrew": "מאוחר",
+    "amharic": "ከባድ ጊዜ",
+    "transliteration": "Kebad Gize"
+  },
+  {
+    "hebrew": "מוקדם",
+    "amharic": "ቀደም ብሎ",
+    "transliteration": "Kedem Bilo"
+  },
+  {
+    "hebrew": "חדר",
+    "amharic": "ክፍል",
+    "transliteration": "Kefel"
+  },
+  {
+    "hebrew": "צהריים",
+    "amharic": "ከሰዓት",
+    "transliteration": "Kese’at"
+  },
+  {
+    "hebrew": "קר",
+    "amharic": "ቀዝቃዛ",
+    "transliteration": "Kezeqaza"
+  },
+  {
+    "hebrew": "לילה",
+    "amharic": "ሌሊት",
+    "transliteration": "Lelit"
+  },
+  {
+    "hebrew": "למה",
+    "amharic": "ለምን",
+    "transliteration": "Lemin"
+  },
+  {
+    "hebrew": "ילד",
+    "amharic": "ልጅ",
+    "transliteration": "Lij"
+  },
+  {
+    "hebrew": "מי",
+    "amharic": "ማን",
+    "transliteration": "Man"
+  },
+  {
+    "hebrew": "לחשוב",
+    "amharic": "ማሰብ",
+    "transliteration": "Maseb"
+  },
+  {
+    "hebrew": "ערב",
+    "amharic": "ማታ",
+    "transliteration": "Mata"
+  },
+  {
+    "hebrew": "לראות",
+    "amharic": "ማየት",
+    "transliteration": "Mayet"
+  },
+  {
+    "hebrew": "לאכול",
+    "amharic": "መብላት",
+    "transliteration": "Meblat"
+  },
+  {
+    "hebrew": "מתי",
+    "amharic": "መቼ",
+    "transliteration": "Meche"
+  },
+  {
+    "hebrew": "סוף שבוע",
+    "amharic": "መጨረሻ ሳምንት",
+    "transliteration": "Mecheresha Sament"
+  },
+  {
+    "hebrew": "סוף החודש",
+    "amharic": "መጨረሻ ወር",
+    "transliteration": "Mecheresha Wer"
+  },
+  {
+    "hebrew": "שירותים",
+    "amharic": "መዳፍ",
+    "transliteration": "Medaf"
+  },
+  {
+    "hebrew": "חנות",
+    "amharic": "መደብር",
+    "transliteration": "Medebir"
+  },
+  {
+    "hebrew": "מפתח",
+    "amharic": "መፍትሄ",
+    "transliteration": "Meftihe"
+  },
+  {
+    "hebrew": "ללכת",
+    "amharic": "መሄድ",
+    "transliteration": "Mehed"
+  },
+  {
+    "hebrew": "תחילת השבוע",
+    "amharic": "መጀመሪያ ሳምንት",
+    "transliteration": "Mejemeriya Sament"
+  },
+  {
+    "hebrew": "תחילת החודש",
+    "amharic": "መጀመሪያ ወር",
+    "transliteration": "Mejemeriya Wer"
+  },
+  {
+    "hebrew": "לשבת",
+    "amharic": "መቀመጥ",
+    "transliteration": "Mek’emet"
+  },
+  {
+    "hebrew": "מכונית",
+    "amharic": "መኪና",
+    "transliteration": "Mekina"
+  },
+  {
+    "hebrew": "לעמוד",
+    "amharic": "መቆም",
+    "transliteration": "Mekom"
+  },
+  {
+    "hebrew": "הודעה",
+    "amharic": "መልእክት",
+    "transliteration": "Mel'ikt"
+  },
+  {
+    "hebrew": "תשובה",
+    "amharic": "መልስ",
+    "transliteration": "Meles"
+  },
+  {
+    "hebrew": "לבוא",
+    "amharic": "መምጣት",
+    "transliteration": "Memtat"
+  },
+  {
+    "hebrew": "מה",
+    "amharic": "ምን",
+    "transliteration": "Men"
+  },
+  {
+    "hebrew": "לדבר",
+    "amharic": "መናገር",
+    "transliteration": "Menager"
+  },
+  {
+    "hebrew": "רחוב",
+    "amharic": "መንገድ",
+    "transliteration": "Meneged"
+  },
+  {
+    "hebrew": "לישון",
+    "amharic": "መተኛት",
+    "transliteration": "Metegnat"
+  },
+  {
+    "hebrew": "לשתות",
+    "amharic": "መጠጣት",
+    "transliteration": "Metet’at"
+  },
+  {
+    "hebrew": "רע",
+    "amharic": "መጥፎ",
+    "transliteration": "Metfo"
+  },
+  {
+    "hebrew": "מאה",
+    "amharic": "መቶ",
+    "transliteration": "Meto"
+  },
+  {
+    "hebrew": "מאה שנה",
+    "amharic": "መቶ ዓመት",
+    "transliteration": "Meto Amet"
+  },
+  {
+    "hebrew": "מאתיים",
+    "amharic": "መቶ ሁለት",
+    "transliteration": "Meto Hulet"
+  },
+  {
+    "hebrew": "אוכל",
+    "amharic": "ምግብ",
+    "transliteration": "Migib"
+  },
+  {
+    "hebrew": "מחר",
+    "amharic": "ነገ",
+    "transliteration": "Nega"
+  },
+  {
+    "hebrew": "דיבור",
+    "amharic": "ንግግር",
+    "transliteration": "Nigigir"
+  },
+  {
+    "hebrew": "פרויקט",
+    "amharic": "ፕሮጀክት",
+    "transliteration": "Project"
+  },
+  {
+    "hebrew": "יום",
+    "amharic": "ቀን",
+    "transliteration": "Qen"
+  },
+  {
+    "hebrew": "שבוע",
+    "amharic": "ሳምንት",
+    "transliteration": "Sament"
+  },
+  {
+    "hebrew": "שעה",
+    "amharic": "ሰዓት",
+    "transliteration": "Se'at"
+  },
+  {
+    "hebrew": "שבעים",
+    "amharic": "ሰባ",
+    "transliteration": "Seba"
+  },
+  {
+    "hebrew": "שבע",
+    "amharic": "ሰባት",
+    "transliteration": "Sebat"
+  },
+  {
+    "hebrew": "שנייה",
+    "amharic": "ሰከንድ",
+    "transliteration": "Sekend"
+  },
+  {
+    "hebrew": "שלושים",
+    "amharic": "ሰላሳ",
+    "transliteration": "Selasa"
+  },
+  {
+    "hebrew": "שישים",
+    "amharic": "ስልሳ",
+    "transliteration": "Selsa"
+  },
+  {
+    "hebrew": "שמונים",
+    "amharic": "ሰማንያ",
+    "transliteration": "Semanya"
+  },
+  {
+    "hebrew": "עובד",
+    "amharic": "ሠራተኛ",
+    "transliteration": "Serategna"
+  },
+  {
+    "hebrew": "אישה",
+    "amharic": "ሴት",
+    "transliteration": "Set"
+  },
+  {
+    "hebrew": "ילדה",
+    "amharic": "ሴት ልጅ",
+    "transliteration": "Set Lij"
+  },
+  {
+    "hebrew": "תה",
+    "amharic": "ሻይ",
+    "transliteration": "Shay"
+  },
+  {
+    "hebrew": "אלף",
+    "amharic": "ሺ",
+    "transliteration": "Shi"
+  },
+  {
+    "hebrew": "אלף שנה",
+    "amharic": "ሺ ዓመት",
+    "transliteration": "Shi Amet"
+  },
+  {
+    "hebrew": "פגישה",
+    "amharic": "ስብሰባ",
+    "transliteration": "Sibsiba"
+  },
+  {
+    "hebrew": "שש",
+    "amharic": "ስድስት",
+    "transliteration": "Sidist"
+  },
+  {
+    "hebrew": "שמונה",
+    "amharic": "ስምንት",
+    "transliteration": "Siment"
+  },
+  {
+    "hebrew": "עבודה",
+    "amharic": "ሥራ",
+    "transliteration": "Sira"
+  },
+  {
+    "hebrew": "שלוש",
+    "amharic": "ሶስት",
+    "transliteration": "Sost"
+  },
+  {
+    "hebrew": "שלושת רבעי שעה",
+    "amharic": "ሶስት አራት ደቂቃ",
+    "transliteration": "Sost Arat Deqiqa"
+  },
+  {
+    "hebrew": "סוכר",
+    "amharic": "ስኩር",
+    "transliteration": "Sukur"
+  },
+  {
+    "hebrew": "שאלה",
+    "amharic": "ጥያቄ",
+    "transliteration": "T’iyaqe"
+  },
+  {
+    "hebrew": "גאה",
+    "amharic": "ትዕቢተኛ ነኝ",
+    "transliteration": "Te’ebitegna Neny"
+  },
+  {
+    "hebrew": "הקשב",
+    "amharic": "ተደምጥ",
+    "transliteration": "Tedem't"
+  },
+  {
+    "hebrew": "מופתע",
+    "amharic": "ተገረመኝ",
+    "transliteration": "Tegeremegn"
+  },
+  {
+    "hebrew": "כועס",
+    "amharic": "ተቆጣሁ",
+    "transliteration": "Tekotahu"
+  },
+  {
+    "hebrew": "טלפון",
+    "amharic": "ተለፎን",
+    "transliteration": "Telefonn"
+  },
+  {
+    "hebrew": "צמא",
+    "amharic": "ጠማኝ",
+    "transliteration": "Temany"
+  },
+  {
+    "hebrew": "תגיד",
+    "amharic": "ተናገር",
+    "transliteration": "Tenager"
+  },
+  {
+    "hebrew": "רעב",
+    "amharic": "ተራቢያለሁ",
+    "transliteration": "Terabyalehu"
+  },
+  {
+    "hebrew": "תחנה",
+    "amharic": "ተራቀቢያ",
+    "transliteration": "Terakebiya"
+  },
+  {
+    "hebrew": "תשעים",
+    "amharic": "ተስዓ",
+    "transliteration": "Tes’a"
+  },
+  {
+    "hebrew": "רווק",
+    "amharic": "ተዋዳድ",
+    "transliteration": "Tewadad"
+  },
+  {
+    "hebrew": "בוקר",
+    "amharic": "ጠዋት",
+    "transliteration": "Tewat"
+  },
+  {
+    "hebrew": "חם",
+    "amharic": "ትኩስ",
+    "transliteration": "Tik’us"
+  },
+  {
+    "hebrew": "שעה מדויקת",
+    "amharic": "ትክክለኛ ሰዓት",
+    "transliteration": "Tikikilegna Se’at"
+  },
+  {
+    "hebrew": "בית ספר",
+    "amharic": "ትምህርት ቤት",
+    "transliteration": "Timhirt Bet"
+  },
+  {
+    "hebrew": "טוב",
+    "amharic": "ጥሩ",
+    "transliteration": "Tiru"
+  },
+  {
+    "hebrew": "זוג",
+    "amharic": "ጥያቄ",
+    "transliteration": "Tiyak’e"
+  },
+  {
+    "hebrew": "אתמול",
+    "amharic": "ትናንትና",
+    "transliteration": "Tnantna"
+  },
+  {
+    "hebrew": "רגוע",
+    "amharic": "ጸጥ ነኝ",
+    "transliteration": "Tset Neny"
+  },
+  {
+    "hebrew": "איש",
+    "amharic": "ወንድ",
+    "transliteration": "Wend"
+  },
+  {
+    "hebrew": "ילד",
+    "amharic": "ወንድ ልጅ",
+    "transliteration": "Wend Lij"
+  },
+  {
+    "hebrew": "אח",
+    "amharic": "ወንድም",
+    "transliteration": "Wendim"
+  },
+  {
+    "hebrew": "תקופה",
+    "amharic": "ወቅት",
+    "transliteration": "Weqet"
+  },
+  {
+    "hebrew": "חודש",
+    "amharic": "ወር",
+    "transliteration": "Wer"
+  },
+  {
+    "hebrew": "חלב",
+    "amharic": "ወተት",
+    "transliteration": "Wetet"
+  },
+  {
+    "hebrew": "שיחה",
+    "amharic": "ውይይት",
+    "transliteration": "Weyyit"
+  },
+  {
+    "hebrew": "מים",
+    "amharic": "ውሃ",
+    "transliteration": "Wuha"
+  },
+  {
+    "hebrew": "נשוי",
+    "amharic": "ያገባ",
+    "transliteration": "Yageba"
+  },
+  {
+    "hebrew": "סבתא",
+    "amharic": "ያያት",
+    "transliteration": "Yayat"
+  },
+  {
+    "hebrew": "מטבח",
+    "amharic": "የምግብ ቤት",
+    "transliteration": "Yemigib Bet"
+  },
+  {
+    "hebrew": "איפה",
+    "amharic": "የት",
+    "transliteration": "Yet"
+  },
+  {
+    "hebrew": "היום",
+    "amharic": "ዛሬ",
+    "transliteration": "Zare"
+  },
+  {
+    "hebrew": "זמן",
+    "amharic": "ዘመን",
+    "transliteration": "Zemen"
+  },
+  {
+    "hebrew": "גשם",
+    "amharic": "ዝና",
+    "transliteration": "Zena"
+  },
+  {
+    "hebrew": "תשע",
+    "amharic": "ዘጠኝ",
+    "transliteration": "ZeTenye"
+  },
+  {
+    "hebrew": "כל הזמן",
+    "amharic": "ዘወትር",
+    "transliteration": "Zeweter"
+  }
 ]
