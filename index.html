@@ -1,516 +1,788 @@
-<script>
-  // Global variables
-  let allWords = []; // All available words
-  let filteredWords = []; // Words filtered by search
-  let quizWords = []; // Current quiz words (10 at a time)
-  let currentQuestionIndex = 0;
-  let currentLearnIndex = 0;
-  let correctAnswers = 0;
-  let incorrectAnswers = 0;
-  let userAnswers = []; // Track user answers for review
-  let quizActive = false;
-  let cardFlipped = false; // Track if flashcard is flipped
-
-  // DOM Elements
-  const startScreen = document.getElementById('startScreen');
-  const learnScreen = document.getElementById('learnScreen');
-  const quizScreen = document.getElementById('quizScreen');
-  const resultsScreen = document.getElementById('resultsScreen');
-  const navMenu = document.getElementById('navMenu');
-  const checkBtn = document.getElementById('checkBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const showAnswerBtn = document.getElementById('showAnswerBtn');
-  const flashcard = document.getElementById('flashcard');
-
-  // --- התחלה של השינוי ---
-
-  // Initialize the app - now loads from words.json
-  async function initialize() {
-    try {
-      const response = await fetch('words.json'); // נסה לטעון את הקובץ words.json
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      allWords = data; // נשתמש בנתונים שנטענו מקובץ ה-JSON
-      filteredWords = [...allWords]; // Initialize filtered words
-
-      if (allWords && allWords.length) {
-        document.getElementById('totalCards').textContent = 10; // מספר השאלות בחידון
-        document.getElementById('totalLearnCards').textContent = allWords.length; // סך כל הכרטיסיות
-      } else {
-        alert('לא נמצאו כרטיסיות בקובץ words.json. ודאו שהקובץ קיים ומכיל נתונים.');
-      }
-    } catch (error) {
-      console.error('שגיאה בטעינת הכרטיסיות מקובץ words.json:', error);
-      alert('אירעה שגיאה בטעינת הכרטיסיות. אנא ודאו שקובץ words.json קיים ומכיל נתונים תקינים.');
-      // גיבוי: אם הטעינה נכשלת, אפשר להגדיר כאן דאטה מקומית קטנה לצורך תצוגה
-      allWords = [
-        ["שלום", "ሰላም", "selam"],
-        ["תודה", "አመሰግናለሁ", "ameseginalehu"]
-      ];
-      filteredWords = [...allWords];
-      document.getElementById('totalCards').textContent = Math.min(10, allWords.length);
-      document.getElementById('totalLearnCards').textContent = allWords.length;
-    }
-  }
-
-  // --- סוף השינוי באתחול ---
-
-  // Switch between sections (start, learn, quiz, results)
-  function switchSection(section) {
-    // Hide all sections
-    startScreen.classList.add('hidden');
-    learnScreen.classList.add('hidden');
-    quizScreen.classList.add('hidden');
-    resultsScreen.classList.add('hidden');
-
-    // Show navigation except on start screen
-    if (section !== 'start') {
-      navMenu.classList.remove('hidden');
-
-      // Update active nav button
-      document.querySelectorAll('.nav-button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-
-      if (section === 'learn') {
-        document.getElementById('learnBtn').classList.add('active');
-      } else if (section === 'quiz') {
-        document.getElementById('quizBtn').classList.add('active');
-      }
-    } else {
-      navMenu.classList.add('hidden');
-    }
-
-    // Show appropriate section
-    if (section === 'start') {
-      startScreen.classList.remove('hidden');
-    } else if (section === 'learn') {
-      learnScreen.classList.remove('hidden');
-      initializeLearnMode();
-    } else if (section === 'quiz') {
-      startQuiz();
-    }
-  }
-
-  // Initialize learning mode
-  function initializeLearnMode() {
-    currentLearnIndex = 0;
-    document.getElementById('searchBox').value = '';
-    filteredWords = [...allWords];
-    loadLearnCard(0);
-    updateLearnProgress();
-  }
-
-  // Load a learn card by index
-  function loadLearnCard(index) {
-    if (!filteredWords || filteredWords.length === 0) {
-      document.getElementById('learnAmharic').textContent = 'אין כרטיסים זמינים';
-      document.getElementById('learnTranslit').textContent = '';
-      document.getElementById('learnHebrew').textContent = '';
-      document.getElementById('prevCardBtn').disabled = true;
-      document.getElementById('nextCardBtn').disabled = true;
-      return;
-    }
-
-    // Handle bounds
-    if (index < 0) index = 0;
-    if (index >= filteredWords.length) index = filteredWords.length - 1;
-
-    currentLearnIndex = index;
-    const word = filteredWords[index];
-
-    // Update UI with the current word
-    document.getElementById('learnAmharic').textContent = word[1];
-    document.getElementById('learnTranslit').textContent = word[2];
-    document.getElementById('learnHebrew').textContent = word[0];
-
-    // Reset card flip state
-    cardFlipped = false;
-    flashcard.classList.remove('flipped');
-
-    // Update navigation buttons
-    document.getElementById('prevCardBtn').disabled = index <= 0;
-    document.getElementById('nextCardBtn').disabled = index >= filteredWords.length - 1;
-
-    // Update card counter
-    document.getElementById('currentLearnCard').textContent = index + 1;
-    document.getElementById('totalLearnCards').textContent = filteredWords.length;
-
-    // Update progress bar
-    updateLearnProgress();
-  }
-
-  // Update the learning progress bar
-  function updateLearnProgress() {
-    const progress = ((currentLearnIndex + 1) / filteredWords.length) * 100;
-    document.getElementById('learnProgressBar').style.width = `${progress}%`;
-  }
-
-  // Navigate to next card in learn mode
-  function nextCard() {
-    if (currentLearnIndex < filteredWords.length - 1) {
-      loadLearnCard(currentLearnIndex + 1);
-    }
-  }
-
-  // Navigate to previous card in learn mode
-  function prevCard() {
-    if (currentLearnIndex > 0) {
-      loadLearnCard(currentLearnIndex - 1);
-    }
-  }
-
-  // Flip the flashcard
-  function flipCard() {
-    cardFlipped = !cardFlipped;
-    flashcard.classList.toggle('flipped');
-  }
-
-  // Filter cards based on search input
-  function filterCards() {
-    const searchTerm = document.getElementById('searchBox').value.trim().toLowerCase();
-
-    if (searchTerm === '') {
-      filteredWords = [...allWords];
-    } else {
-      filteredWords = allWords.filter(word => {
-        const hebrew = word[0].toLowerCase();
-        const amharic = word[1].toLowerCase();
-        const translit = word[2].toLowerCase();
-
-        return hebrew.includes(searchTerm) ||
-          amharic.includes(searchTerm) ||
-          translit.includes(searchTerm);
-      });
-    }
-
-    // Reset index and load first matching card
-    currentLearnIndex = 0;
-    loadLearnCard(0);
-  }
-
-  // Start the quiz with 10 random cards
-  function startQuiz() {
-    if (!allWords || allWords.length === 0) {
-      alert('אנא המתינו לטעינת הכרטיסיות.');
-      return;
-    }
-
-    // Reset quiz state
-    currentQuestionIndex = 0;
-    correctAnswers = 0;
-    incorrectAnswers = 0;
-    userAnswers = [];
-    quizActive = true;
-
-    // Select 10 random words (or all if less than 10)
-    const numQuestions = Math.min(10, allWords.length);
-    quizWords = [];
-
-    // Create a copy of allWords to shuffle
-    const shuffledWords = [...allWords];
-    for (let i = shuffledWords.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
-    }
-
-    // Take first 10 words
-    quizWords = shuffledWords.slice(0, numQuestions);
-
-    // Update UI
-    document.getElementById('correctCount').textContent = 0;
-    document.getElementById('incorrectCount').textContent = 0;
-    document.getElementById('currentCard').textContent = 1;
-    document.getElementById('totalCards').textContent = numQuestions;
-    document.getElementById('progressBar').style.width = '0%';
-
-    // Show quiz screen
-    startScreen.classList.add('hidden');
-    learnScreen.classList.add('hidden');
-    quizScreen.classList.remove('hidden');
-    resultsScreen.classList.add('hidden');
-
-    // Show navigation
-    navMenu.classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.getElementById('quizBtn').classList.add('active');
-
-    // Load first question
-    loadQuestion(0);
-  }
-
-  // Load a question by index
-  function loadQuestion(index) {
-    if (index >= quizWords.length) {
-      showResults();
-      return;
-    }
-
-    const word = quizWords[index];
-
-    // Update UI with the current word (Hebrew hidden, Amharic & transliteration shown)
-    document.getElementById('amharic').textContent = word[1];
-    document.getElementById('translit').textContent = word[2];
-
-    // Reset UI elements
-    document.getElementById('answerInput').value = '';
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('feedback').className = 'feedback';
-
-    // Show check button, hide next button
-    checkBtn.classList.remove('hidden');
-    nextBtn.classList.add('hidden');
-    showAnswerBtn.classList.add('hidden');
-
-    // Focus on answer input
-    setTimeout(() => {
-      document.getElementById('answerInput').focus();
-    }, 100);
-
-    // Update progress
-    document.getElementById('currentCard').textContent = index + 1;
-    document.getElementById('progressBar').style.width = `${((index + 1) / quizWords.length) * 100}%`;
-  }
-
-  // Check the user's answer
-  function checkAnswer() {
-    if (!quizActive) return;
-
-    const currentWord = quizWords[currentQuestionIndex];
-    const correctAnswer = currentWord[0]; // Hebrew word
-    const userAnswer = document.getElementById('answerInput').value.trim();
-
-    const isCorrect = isAnswerCorrect(userAnswer, correctAnswer);
-
-    // Store the answer for review
-    userAnswers.push({
-      hebrew: correctAnswer,
-      amharic: currentWord[1],
-      translit: currentWord[2],
-      userAnswer: userAnswer,
-      isCorrect: isCorrect
-    });
-
-    // Update scores
-    if (isCorrect) {
-      correctAnswers++;
-      document.getElementById('correctCount').textContent = correctAnswers;
-      document.getElementById('feedback').textContent = 'נכון!';
-      document.getElementById('feedback').className = 'feedback correct';
-    } else {
-      incorrectAnswers++;
-      document.getElementById('incorrectCount').textContent = incorrectAnswers;
-      document.getElementById('feedback').textContent = 'לא נכון';
-      document.getElementById('feedback').className = 'feedback incorrect';
-      showAnswerBtn.classList.remove('hidden');
-    }
-
-
-    // Show next button, hide check button
-    checkBtn.classList.add('hidden');
-    nextBtn.classList.remove('hidden');
-
-    // Disable input after submission
-    document.getElementById('answerInput').disabled = true;
-  }
-
-  // Show the correct answer
-  function showCorrectAnswer() {
-    const currentWord = quizWords[currentQuestionIndex];
-    document.getElementById('feedback').textContent = `התשובה הנכונה: ${currentWord[0]}`;
-    document.getElementById('feedback').className = 'feedback';
-    showAnswerBtn.classList.add('hidden');
-  }
-
-  // Compare user answer with correct answer with some flexibility
-  function isAnswerCorrect(userAnswer, correctAnswer) {
-    // Convert both to lowercase for case-insensitive comparison
-    userAnswer = userAnswer.toLowerCase().trim();
-    correctAnswer = correctAnswer.toLowerCase().trim();
-
-    // Direct match
-    if (userAnswer === correctAnswer) return true;
-
-    // Remove nikud/vowels for more flexible matching
-    const userClean = removeNikud(userAnswer);
-    const correctClean = removeNikud(correctAnswer);
-
-    return userClean === correctClean;
-  }
-
-  // Function to remove Hebrew nikud (vowel points)
-  function removeNikud(text) {
-    return text.replace(/[\u0591-\u05C7]/g, '').trim();
-  }
-
-  // Move to the next question
-  function nextQuestion() {
-    if (!quizActive) return;
-
-    currentQuestionIndex++;
-
-    // Enable input for next question
-    document.getElementById('answerInput').disabled = false;
-
-    if (currentQuestionIndex < quizWords.length) {
-      loadQuestion(currentQuestionIndex);
-    } else {
-      showResults();
-    }
-  }
-
-  // Show quiz results
-  function showResults() {
-    quizActive = false;
-
-    // Calculate final score and percentage
-    const totalQuestions = quizWords.length;
-    const score = correctAnswers;
-    const percentage = Math.round((score / totalQuestions) * 100);
-
-    // Update results screen
-    document.getElementById('finalScore').textContent = score;
-
-    // Generate feedback based on score
-    let feedback = '';
-    if (percentage >= 90) {
-      feedback = 'מצוין! שליטה מעולה באמהרית!';
-      showConfetti(); // Celebrate high scores
-    } else if (percentage >= 70) {
-      feedback = 'כל הכבוד! תוצאה טובה מאוד!';
-    } else if (percentage >= 50) {
-      feedback = 'לא רע! המשיכו לתרגל.';
-    } else {
-      feedback = 'כדאי להמשיך ללמוד ולנסות שוב.';
-    }
-
-    document.getElementById('resultsFeedback').textContent = feedback;
-
-    // Generate results details
-    const resultsHTML = userAnswers.map((answer, index) => {
-      const resultClass = answer.isCorrect ? 'result-correct' : 'result-incorrect';
-      let html = `<div class="result-item">
-          <div>
-            <strong>${index + 1}. ${answer.amharic}</strong> (${answer.translit})
-            <br>תשובה נכונה: ${answer.hebrew}
-          </div>
-          <div class="${resultClass}">
-            ${answer.isCorrect ? '✓' : '✗'}
-          </div>
-        </div>`;
-
-      if (!answer.isCorrect) {
-        html += `<div style="color: #666; margin-bottom: 10px; padding-right: 10px;">
-            התשובה שלך: ${answer.userAnswer || '(ללא תשובה)'}
-          </div>`;
-      }
-
-      return html;
-    }).join('');
-
-    document.getElementById('resultsDetails').innerHTML = resultsHTML;
-
-    // Show results screen
-    quizScreen.classList.add('hidden');
-    resultsScreen.classList.remove('hidden');
-  }
-
-  // Confetti celebration for high scores
-  function showConfetti() {
-    const canvas = document.getElementById('confetti-canvas');
-    canvas.classList.remove('hidden');
-
-    const context = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const confettiCount = 200;
-    const confettiColors = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#577590'];
-    const confetti = [];
-
-    // Create confetti particles
-    for (let i = 0; i < confettiCount; i++) {
-      confetti.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        size: Math.random() * 10 + 5,
-        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-        speed: Math.random() * 3 + 2,
-        angle: Math.random() * 6.28,
-        spin: Math.random() * 0.2 - 0.1,
-        gravity: Math.random() * 0.5 + 0.5
-      });
-    }
-
-    let animationFrame;
-    const animate = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      let stillFalling = false;
-
-      for (let i = 0; i < confetti.length; i++) {
-        const p = confetti[i];
-
-        context.beginPath();
-        context.moveTo(p.x, p.y);
-        context.lineTo(p.x + p.size, p.y + p.size);
-        context.lineTo(p.x + p.size, p.y);
-        context.closePath();
-        context.fillStyle = p.color;
-        context.fill();
-
-        p.angle += p.spin;
-        p.y += p.speed;
-        p.x += Math.sin(p.angle) * 2;
-        p.speed += p.gravity / 10;
-
-        if (p.y < canvas.height) {
-          stillFalling = true;
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לימוד אמהרית</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS בסיסי להסתרת אלמנטים ולמניעת שגיאות בתצוגה ראשונית */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            direction: rtl; /* לכיוון מימין לשמאל עבור עברית */
+            text-align: right; /* יישור טקסט לימין */
         }
-      }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .screen {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+        }
+        button:hover:enabled {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: right;
+        }
+        .nav-menu {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .nav-button {
+            background-color: #6c757d;
+        }
+        .nav-button.active {
+            background-color: #007bff;
+        }
+        #flashcard {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            perspective: 1000px; /* For 3D flip effect */
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        #flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        #learnAmharic, #amharic {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            color: #28a745;
+        }
+        #learnTranslit, #translit {
+            font-size: 1.2em;
+            color: #666;
+        }
+        #learnHebrew {
+            font-size: 1.8em;
+            margin-top: 10px;
+            color: #007bff;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            height: 15px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .feedback.correct {
+            color: #28a745;
+        }
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+        .results-summary {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="startScreen" class="screen">
+            <h1>ברוכים הבאים ללימוד אמהרית!</h1>
+            <p>בחרו מצב לימוד:</p>
+            <button onclick="switchSection('learn')">למידת כרטיסיות</button>
+            <button onclick="switchSection('quiz')">התחלת חידון</button>
+        </div>
 
-      if (stillFalling) {
-        animationFrame = requestAnimationFrame(animate);
-      } else {
-        setTimeout(() => {
-          canvas.classList.add('hidden');
-          cancelAnimationFrame(animationFrame);
-        }, 1000);
-      }
-    };
+        <div id="learnScreen" class="screen hidden">
+            <h2>למידת כרטיסיות</h2>
+            <input type="text" id="searchBox" placeholder="חפש מילה בעברית, אמהרית או תעתיק" onkeyup="filterCards()">
 
-    animationFrame = requestAnimationFrame(animate);
+            <div id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <p id="learnAmharic"></p>
+                        <p id="learnTranslit"></p>
+                    </div>
+                    <div class="flashcard-back">
+                        <p id="learnHebrew"></p>
+                    </div>
+                </div>
+            </div>
 
-    // Hide confetti after 3 seconds regardless
-    setTimeout(() => {
-      canvas.classList.add('hidden');
-      cancelAnimationFrame(animationFrame);
-    }, 5000);
-  }
+            <p>כרטיסית <span id="currentLearnCard">0</span> מתוך <span id="totalLearnCards">0</span></p>
+            <div class="progress-bar-container">
+                <div id="learnProgressBar" class="progress-bar"></div>
+            </div>
 
-  // Handle answer input with Enter key
-  document.getElementById('answerInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      if (!document.getElementById('checkBtn').classList.contains('hidden')) {
-        checkAnswer();
-      } else if (!document.getElementById('nextBtn').classList.contains('hidden')) {
-        nextQuestion();
-      }
-    }
-  });
+            <button id="prevCardBtn" onclick="prevCard()">הקודם</button>
+            <button id="nextCardBtn" onclick="nextCard()">הבא</button>
+        </div>
 
-  // Handle window resize for confetti canvas
-  window.addEventListener('resize', function() {
-    const canvas = document.getElementById('confetti-canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+        <div id="quizScreen" class="screen hidden">
+            <h2>חידון</h2>
+            <p>שאלה <span id="currentCard">0</span> מתוך <span id="totalCards">0</span></p>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
 
-  // Call initialize when the DOM is fully loaded
-  document.addEventListener('DOMContentLoaded', initialize);
-</script>
+            <div class="quiz-question">
+                <p style="font-size: 2em; color: #28a745;" id="amharic"></p>
+                <p style="font-size: 1.2em; color: #666;" id="translit"></p>
+                <input type="text" id="answerInput" placeholder="הקלד את התשובה בעברית">
+                <p id="feedback" class="feedback"></p>
+            </div>
+
+            <button id="checkBtn" onclick="checkAnswer()">בדוק</button>
+            <button id="showAnswerBtn" class="hidden" onclick="showCorrectAnswer()">הצג תשובה</button>
+            <button id="nextBtn" class="hidden" onclick="nextQuestion()">הבא</button>
+
+            <div class="quiz-score">
+                <p>נכונות: <span id="correctCount">0</span></p>
+                <p>שגויות: <span id="incorrectCount">0</span></p>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="screen hidden">
+            <h2>תוצאות החידון</h2>
+            <p class="results-summary">ציון סופי: <span id="finalScore">0</span> מתוך <span id="totalCards">0</span></p>
+            <p id="resultsFeedback" style="font-weight: bold;"></p>
+
+            <h3>סקירת תשובות:</h3>
+            <div id="resultsDetails">
+                </div>
+
+            <button onclick="switchSection('start')">חזור למסך הבית</button>
+            <button onclick="switchSection('quiz')">נסה שוב</button>
+            <button onclick="switchSection('learn')">חזור למסך למידה</button>
+        </div>
+
+        <div id="navMenu" class="nav-menu hidden">
+            <button id="learnBtn" class="nav-button" onclick="switchSection('learn')">למידה</button>
+            <button id="quizBtn" class="nav-button" onclick="switchSection('quiz')">חידון</button>
+            <button class="nav-button" onclick="switchSection('start')">בית</button>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas" class="hidden"></canvas>
+
+    <script>
+        // Global variables
+        let allWords = []; // All available words
+        let filteredWords = []; // Words filtered by search
+        let quizWords = []; // Current quiz words (10 at a time)
+        let currentQuestionIndex = 0;
+        let currentLearnIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let userAnswers = []; // Track user answers for review
+        let quizActive = false;
+        let cardFlipped = false; // Track if flashcard is flipped
+
+        // DOM Elements
+        const startScreen = document.getElementById('startScreen');
+        const learnScreen = document.getElementById('learnScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const navMenu = document.getElementById('navMenu');
+        const checkBtn = document.getElementById('checkBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const showAnswerBtn = document.getElementById('showAnswerBtn');
+        const flashcard = document.getElementById('flashcard');
+
+        // --- התחלה של השינוי ---
+
+        // Initialize the app - now loads from words.json
+        async function initialize() {
+          try {
+            const response = await fetch('words.json'); // נסה לטעון את הקובץ words.json
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            allWords = data; // נשתמש בנתונים שנטענו מקובץ ה-JSON
+            filteredWords = [...allWords]; // Initialize filtered words
+
+            if (allWords && allWords.length) {
+              document.getElementById('totalCards').textContent = Math.min(10, allWords.length); // מספר השאלות בחידון
+              document.getElementById('totalLearnCards').textContent = allWords.length; // סך כל הכרטיסיות
+            } else {
+              alert('לא נמצאו כרטיסיות בקובץ words.json. ודאו שהקובץ קיים ומכיל נתונים.');
+            }
+          } catch (error) {
+            console.error('שגיאה בטעינת הכרטיסיות מקובץ words.json:', error);
+            alert('אירעה שגיאה בטעינת הכרטיסיות. אנא ודאו שקובץ words.json קיים ומכיל נתונים תקינים.');
+            // גיבוי: אם הטעינה נכשלת, אפשר להגדיר כאן דאטה מקומית קטנה לצורך תצוגה
+            allWords = [
+              ["שלום", "ሰላም", "selam"],
+              ["תודה", "አመሰግናለሁ", "ameseginalehu"]
+            ];
+            filteredWords = [...allWords];
+            document.getElementById('totalCards').textContent = Math.min(10, allWords.length);
+            document.getElementById('totalLearnCards').textContent = allWords.length;
+          }
+        }
+
+        // --- סוף השינוי באתחול ---
+
+        // Switch between sections (start, learn, quiz, results)
+        function switchSection(section) {
+          // Hide all sections
+          startScreen.classList.add('hidden');
+          learnScreen.classList.add('hidden');
+          quizScreen.classList.add('hidden');
+          resultsScreen.classList.add('hidden');
+
+          // Show navigation except on start screen
+          if (section !== 'start') {
+            navMenu.classList.remove('hidden');
+
+            // Update active nav button
+            document.querySelectorAll('.nav-button').forEach(btn => {
+              btn.classList.remove('active');
+            });
+
+            if (section === 'learn') {
+              document.getElementById('learnBtn').classList.add('active');
+            } else if (section === 'quiz') {
+              document.getElementById('quizBtn').classList.add('active');
+            }
+          } else {
+            navMenu.classList.add('hidden');
+          }
+
+          // Show appropriate section
+          if (section === 'start') {
+            startScreen.classList.remove('hidden');
+          } else if (section === 'learn') {
+            learnScreen.classList.remove('hidden');
+            initializeLearnMode();
+          } else if (section === 'quiz') {
+            startQuiz();
+          }
+        }
+
+        // Initialize learning mode
+        function initializeLearnMode() {
+          currentLearnIndex = 0;
+          document.getElementById('searchBox').value = '';
+          filteredWords = [...allWords];
+          loadLearnCard(0);
+          updateLearnProgress();
+        }
+
+        // Load a learn card by index
+        function loadLearnCard(index) {
+          if (!filteredWords || filteredWords.length === 0) {
+            document.getElementById('learnAmharic').textContent = 'אין כרטיסים זמינים';
+            document.getElementById('learnTranslit').textContent = '';
+            document.getElementById('learnHebrew').textContent = '';
+            document.getElementById('prevCardBtn').disabled = true;
+            document.getElementById('nextCardBtn').disabled = true;
+            return;
+          }
+
+          // Handle bounds
+          if (index < 0) index = 0;
+          if (index >= filteredWords.length) index = filteredWords.length - 1;
+
+          currentLearnIndex = index;
+          const word = filteredWords[index];
+
+          // Update UI with the current word
+          document.getElementById('learnAmharic').textContent = word[1];
+          document.getElementById('learnTranslit').textContent = word[2];
+          document.getElementById('learnHebrew').textContent = word[0];
+
+          // Reset card flip state
+          cardFlipped = false;
+          flashcard.classList.remove('flipped');
+
+          // Update navigation buttons
+          document.getElementById('prevCardBtn').disabled = index <= 0;
+          document.getElementById('nextCardBtn').disabled = index >= filteredWords.length - 1;
+
+          // Update card counter
+          document.getElementById('currentLearnCard').textContent = index + 1;
+          document.getElementById('totalLearnCards').textContent = filteredWords.length;
+
+          // Update progress bar
+          updateLearnProgress();
+        }
+
+        // Update the learning progress bar
+        function updateLearnProgress() {
+          const progress = ((currentLearnIndex + 1) / filteredWords.length) * 100;
+          document.getElementById('learnProgressBar').style.width = `${progress}%`;
+        }
+
+        // Navigate to next card in learn mode
+        function nextCard() {
+          if (currentLearnIndex < filteredWords.length - 1) {
+            loadLearnCard(currentLearnIndex + 1);
+          }
+        }
+
+        // Navigate to previous card in learn mode
+        function prevCard() {
+          if (currentLearnIndex > 0) {
+            loadLearnCard(currentLearnIndex - 1);
+          }
+        }
+
+        // Flip the flashcard
+        function flipCard() {
+          cardFlipped = !cardFlipped;
+          flashcard.classList.toggle('flipped');
+        }
+
+        // Filter cards based on search input
+        function filterCards() {
+          const searchTerm = document.getElementById('searchBox').value.trim().toLowerCase();
+
+          if (searchTerm === '') {
+            filteredWords = [...allWords];
+          } else {
+            filteredWords = allWords.filter(word => {
+              const hebrew = word[0].toLowerCase();
+              const amharic = word[1].toLowerCase();
+              const translit = word[2].toLowerCase();
+
+              return hebrew.includes(searchTerm) ||
+                amharic.includes(searchTerm) ||
+                translit.includes(searchTerm);
+            });
+          }
+
+          // Reset index and load first matching card
+          currentLearnIndex = 0;
+          loadLearnCard(0);
+        }
+
+        // Start the quiz with 10 random cards
+        function startQuiz() {
+          if (!allWords || allWords.length === 0) {
+            alert('אנא המתינו לטעינת הכרטיסיות.');
+            return;
+          }
+
+          // Reset quiz state
+          currentQuestionIndex = 0;
+          correctAnswers = 0;
+          incorrectAnswers = 0;
+          userAnswers = [];
+          quizActive = true;
+
+          // Select 10 random words (or all if less than 10)
+          const numQuestions = Math.min(10, allWords.length);
+          quizWords = [];
+
+          // Create a copy of allWords to shuffle
+          const shuffledWords = [...allWords];
+          for (let i = shuffledWords.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
+          }
+
+          // Take first 10 words
+          quizWords = shuffledWords.slice(0, numQuestions);
+
+          // Update UI
+          document.getElementById('correctCount').textContent = 0;
+          document.getElementById('incorrectCount').textContent = 0;
+          document.getElementById('currentCard').textContent = 1;
+          document.getElementById('totalCards').textContent = numQuestions;
+          document.getElementById('progressBar').style.width = '0%';
+
+          // Show quiz screen
+          startScreen.classList.add('hidden');
+          learnScreen.classList.add('hidden');
+          quizScreen.classList.remove('hidden');
+          resultsScreen.classList.add('hidden');
+
+          // Show navigation
+          navMenu.classList.remove('hidden');
+          document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          document.getElementById('quizBtn').classList.add('active');
+
+          // Load first question
+          loadQuestion(0);
+        }
+
+        // Load a question by index
+        function loadQuestion(index) {
+          if (index >= quizWords.length) {
+            showResults();
+            return;
+          }
+
+          const word = quizWords[index];
+
+          // Update UI with the current word (Hebrew hidden, Amharic & transliteration shown)
+          document.getElementById('amharic').textContent = word[1];
+          document.getElementById('translit').textContent = word[2];
+
+          // Reset UI elements
+          document.getElementById('answerInput').value = '';
+          document.getElementById('feedback').textContent = '';
+          document.getElementById('feedback').className = 'feedback';
+
+          // Show check button, hide next button
+          checkBtn.classList.remove('hidden');
+          nextBtn.classList.add('hidden');
+          showAnswerBtn.classList.add('hidden');
+
+          // Focus on answer input
+          setTimeout(() => {
+            document.getElementById('answerInput').focus();
+          }, 100);
+
+          // Update progress
+          document.getElementById('currentCard').textContent = index + 1;
+          document.getElementById('progressBar').style.width = `${((index + 1) / quizWords.length) * 100}%`;
+        }
+
+        // Check the user's answer
+        function checkAnswer() {
+          if (!quizActive) return;
+
+          const currentWord = quizWords[currentQuestionIndex];
+          const correctAnswer = currentWord[0]; // Hebrew word
+          const userAnswer = document.getElementById('answerInput').value.trim();
+
+          const isCorrect = isAnswerCorrect(userAnswer, correctAnswer);
+
+          // Store the answer for review
+          userAnswers.push({
+            hebrew: correctAnswer,
+            amharic: currentWord[1],
+            translit: currentWord[2],
+            userAnswer: userAnswer,
+            isCorrect: isCorrect
+          });
+
+          // Update scores
+          if (isCorrect) {
+            correctAnswers++;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('feedback').textContent = 'נכון!';
+            document.getElementById('feedback').className = 'feedback correct';
+          } else {
+            incorrectAnswers++;
+            document.getElementById('incorrectCount').textContent = incorrectAnswers;
+            document.getElementById('feedback').textContent = 'לא נכון';
+            document.getElementById('feedback').className = 'feedback incorrect';
+            showAnswerBtn.classList.remove('hidden');
+          }
+
+
+          // Show next button, hide check button
+          checkBtn.classList.add('hidden');
+          nextBtn.classList.remove('hidden');
+
+          // Disable input after submission
+          document.getElementById('answerInput').disabled = true;
+        }
+
+        // Show the correct answer
+        function showCorrectAnswer() {
+          const currentWord = quizWords[currentQuestionIndex];
+          document.getElementById('feedback').textContent = `התשובה הנכונה: ${currentWord[0]}`;
+          document.getElementById('feedback').className = 'feedback';
+          showAnswerBtn.classList.add('hidden');
+        }
+
+        // Compare user answer with correct answer with some flexibility
+        function isAnswerCorrect(userAnswer, correctAnswer) {
+          // Convert both to lowercase for case-insensitive comparison
+          userAnswer = userAnswer.toLowerCase().trim();
+          correctAnswer = correctAnswer.toLowerCase().trim();
+
+          // Direct match
+          if (userAnswer === correctAnswer) return true;
+
+          // Remove nikud/vowels for more flexible matching
+          const userClean = removeNikud(userAnswer);
+          const correctClean = removeNikud(correctAnswer);
+
+          return userClean === correctClean;
+        }
+
+        // Function to remove Hebrew nikud (vowel points)
+        function removeNikud(text) {
+          return text.replace(/[\u0591-\u05C7]/g, '').trim();
+        }
+
+        // Move to the next question
+        function nextQuestion() {
+          if (!quizActive) return;
+
+          currentQuestionIndex++;
+
+          // Enable input for next question
+          document.getElementById('answerInput').disabled = false;
+
+          if (currentQuestionIndex < quizWords.length) {
+            loadQuestion(currentQuestionIndex);
+          } else {
+            showResults();
+          }
+        }
+
+        // Show quiz results
+        function showResults() {
+          quizActive = false;
+
+          // Calculate final score and percentage
+          const totalQuestions = quizWords.length;
+          const score = correctAnswers;
+          const percentage = Math.round((score / totalQuestions) * 100);
+
+          // Update results screen
+          document.getElementById('finalScore').textContent = score;
+
+          // Generate feedback based on score
+          let feedback = '';
+          if (percentage >= 90) {
+            feedback = 'מצוין! שליטה מעולה באמהרית!';
+            showConfetti(); // Celebrate high scores
+          } else if (percentage >= 70) {
+            feedback = 'כל הכבוד! תוצאה טובה מאוד!';
+          } else if (percentage >= 50) {
+            feedback = 'לא רע! המשיכו לתרגל.';
+          } else {
+            feedback = 'כדאי להמשיך ללמוד ולנסות שוב.';
+          }
+
+          document.getElementById('resultsFeedback').textContent = feedback;
+
+          // Generate results details
+          const resultsHTML = userAnswers.map((answer, index) => {
+            const resultClass = answer.isCorrect ? 'result-correct' : 'result-incorrect';
+            let html = `<div class="result-item">
+                        <div>
+                          <strong>${index + 1}. ${answer.amharic}</strong> (${answer.translit})
+                          <br>תשובה נכונה: ${answer.hebrew}
+                        </div>
+                        <div class="${resultClass}">
+                          ${answer.isCorrect ? '✓' : '✗'}
+                        </div>
+                      </div>`;
+
+            if (!answer.isCorrect) {
+              html += `<div style="color: #666; margin-bottom: 10px; padding-right: 10px;">
+                        התשובה שלך: ${answer.userAnswer || '(ללא תשובה)'}
+                      </div>`;
+            }
+
+            return html;
+          }).join('');
+
+          document.getElementById('resultsDetails').innerHTML = resultsHTML;
+
+          // Show results screen
+          quizScreen.classList.add('hidden');
+          resultsScreen.classList.remove('hidden');
+        }
+
+        // Confetti celebration for high scores
+        function showConfetti() {
+          const canvas = document.getElementById('confetti-canvas');
+          canvas.classList.remove('hidden');
+
+          const context = canvas.getContext('2d');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+
+          const confettiCount = 200;
+          const confettiColors = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#577590'];
+          const confetti = [];
+
+          // Create confetti particles
+          for (let i = 0; i < confettiCount; i++) {
+            confetti.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height - canvas.height,
+              size: Math.random() * 10 + 5,
+              color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+              speed: Math.random() * 3 + 2,
+              angle: Math.random() * 6.28,
+              spin: Math.random() * 0.2 - 0.1,
+              gravity: Math.random() * 0.5 + 0.5
+            });
+          }
+
+          let animationFrame;
+          const animate = () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            let stillFalling = false;
+
+            for (let i = 0; i < confetti.length; i++) {
+              const p = confetti[i];
+
+              context.beginPath();
+              context.moveTo(p.x, p.y);
+              context.lineTo(p.x + p.size, p.y + p.size);
+              context.lineTo(p.x + p.size, p.y);
+              context.closePath();
+              context.fillStyle = p.color;
+              context.fill();
+
+              p.angle += p.spin;
+              p.y += p.speed;
+              p.x += Math.sin(p.angle) * 2;
+              p.speed += p.gravity / 10;
+
+              if (p.y < canvas.height) {
+                stillFalling = true;
+              }
+            }
+
+            if (stillFalling) {
+              animationFrame = requestAnimationFrame(animate);
+            } else {
+              setTimeout(() => {
+                canvas.classList.add('hidden');
+                cancelAnimationFrame(animationFrame);
+              }, 1000);
+            }
+          };
+
+          animationFrame = requestAnimationFrame(animate);
+
+          // Hide confetti after 3 seconds regardless
+          setTimeout(() => {
+            canvas.classList.add('hidden');
+            cancelAnimationFrame(animationFrame);
+          }, 5000);
+        }
+
+        // Handle answer input with Enter key
+        document.getElementById('answerInput').addEventListener('keypress', function(event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            if (!document.getElementById('checkBtn').classList.contains('hidden')) {
+              checkAnswer();
+            } else if (!document.getElementById('nextBtn').classList.contains('hidden')) {
+              nextQuestion();
+            }
+          }
+        });
+
+        // Handle window resize for confetti canvas
+        window.addEventListener('resize', function() {
+          const canvas = document.getElementById('confetti-canvas');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+
+        // Call initialize when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
