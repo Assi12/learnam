@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>אמהרית - לימוד ובחינה</title>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background-color: #f5f5f7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    h2 {
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .card {
+      border-radius: 16px;
+      padding: 25px;
+      margin: 20px auto;
+      width: 100%;
+      background-color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card:active {
+      transform: scale(0.98);
+    }
+    
+    .card p {
+      font-size: 18px;
+      margin: 15px 0;
+      line-height: 1.5;
+    }
+    
+    .word {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #1a1a1a;
+    }
+    
+    .section {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f8f8f8;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background-color: #0071e3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+    
+    button:active {
+      background-color: #005bbf;
+    }
+    
+    .btn-primary {
+      background-color: #0071e3;
+    }
+    
+    .btn-success {
+      background-color: #34c759;
+    }
+    
+    .btn-danger {
+      background-color: #ff3b30;
+    }
+    
+    .btn-warning {
+      background-color: #ff9500;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    /* Progress indicator */
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background-color: #e0e0e0;
+      border-radius: 3px;
+      margin: 0 auto 15px auto;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #0071e3;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    /* Score display */
+    .score-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .score-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .score-value {
+      font-size: 20px;
+      margin-top: 5px;
+    }
+    
+    .correct {
+      color: #34c759;
+    }
+    
+    .incorrect {
+      color: #ff3b30;
+    }
+    
+    /* Answer input */
+    .answer-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: right;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .answer-input:focus {
+      outline: none;
+      border-color: #0071e3;
+    }
+    
+    /* Results screen */
+    .results-screen {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin: 20px auto;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .results-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .results-score {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #0071e3;
+    }
+    
+    .results-details {
+      margin: 30px 0;
+      text-align: left;
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .result-correct {
+      color: #34c759;
+      font-weight: bold;
+    }
+    
+    .result-incorrect {
+      color: #ff3b30;
+      font-weight: bold;
+    }
+    
+    /* Navigation Menu */
+    .nav-menu {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .nav-button {
+      background-color: transparent;
+      color: #0071e3;
+      border: 2px solid #0071e3;
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin: 0 5px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-button.active {
+      background-color: #0071e3;
+      color: white;
+    }
+    
+    /* Learning screen */
+    .flashcard {
+      perspective: 1000px;
+      height: 250px;
+      cursor: pointer;
+      margin: 20px 0;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    
+    .flashcard-front {
+      background-color: white;
+    }
+    
+    .flashcard-back {
+      background-color: #f0f0f0;
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-hint {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+    }
+    
+    /* Filter controls for learning mode */
+    .filter-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #f5f5f7;
+      }
+      
+      h2 {
+        color: #f5f5f7;
+      }
+      
+      .card, .score-container, .results-screen, .flashcard-front {
+        background-color: #2c2c2e;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+      
+      .flashcard-back {
+        background-color: #3a3a3c;
+      }
+      
+      .word {
+        color: #ffffff;
+      }
+      
+      .section {
+        background-color: #3a3a3c;
+      }
+      
+      .answer-input {
+        background-color: #3a3a3c;
+        color: #fff;
+        border-color: #4a4a4c;
+      }
+      
+      .score-label {
+        color: #aaa;
+      }
+      
+      .results-title {
+        color: #f5f5f7;
+      }
+      
+      .result-item {
+        border-bottom-color: #444;
+      }
+      
+      .nav-button {
+        color: #0071e3;
+        border-color: #0071e3;
+      }
+      
+      .nav-button.active {
+        background-color: #0071e3;
+        color: #f5f5f7;
+      }
+      
+      .flashcard-hint {
+        color: #aaa;
+      }
+    }
+    
+    /* iOS-specific styles */
+    @supports (-webkit-touch-callout: none) {
+      button {
+        padding: 12px 25px;
+      }
+    }
+    
+    /* Animation for card flip */
+    @keyframes flipIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .flip-in {
+      animation: flipIn 0.3s ease forwards;
+    }
+    
+    /* Counter display */
+    .counter {
+      font-size: 14px;
+      color: #8e8e93;
+      margin-top: 15px;
+    }
+    
+    /* Quiz mode specific styles */
+    .feedback {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      height: 25px;
+    }
+    
+    .feedback.correct {
+      color: #34c759;
+    }
+    
+    .feedback.incorrect {
+      color: #ff3b30;
+    }
+    
+    /* Confetti for celebration */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    /* Search box */
+    .search-box {
+      width: 100%;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: right;
+    }
+    
+    .search-box:focus {
+      outline: none;
+      border-color: #0071e3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="mainContainer">
+    <h2>אמהרית - לימוד ובחינה</h2>
+    
+    <!-- Navigation Menu (Hidden initially on landing page) -->
+    <div id="navMenu" class="nav-menu hidden">
+      <button id="learnBtn" class="nav-button" onclick="switchSection('learn')">למידה</button>
+      <button id="quizBtn" class="nav-button" onclick="switchSection('quiz')">בחינה</button>
+    </div>
+    
+    <!-- Start Screen -->
+    <div id="startScreen" class="card">
+      <p>ברוכים הבאים ללומדת אמהרית!</p>
+      <p>תוכלו ללמוד כרטיסיות או לבחון את עצמכם.</p>
+      <div class="controls">
+        <button class="btn-primary" onclick="switchSection('learn')">למידת כרטיסיות</button>
+        <button class="btn-warning" onclick="switchSection('quiz')">בחינת כרטיסיות</button>
+      </div>
+    </div>
+    
+    <!-- Learning Screen (New Addition) -->
+    <div id="learnScreen" class="hidden">
+      <div class="score-container">
+        <div class="score-item">
+          <span class="score-label">כרטיס</span>
+          <span class="score-value"><span id="currentLearnCard">0</span>/<span id="totalLearnCards">0</span></span>
+        </div>
+      </div>
+      
+      <div class="filter-controls">
+        <input type="text" id="searchBox" class="search-box" placeholder="חיפוש מילים..." oninput="filterCards()">
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="learnProgressBar"></div>
+      </div>
+      
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner" id="flashcardInner">
+          <div class="flashcard-front">
+            <div class="section">
+              <p><strong>אמהרית:</strong></p>
+              <p class="word" id="learnAmharic"></p>
+            </div>
+            <div class="section">
+              <p><strong>תעתיק:</strong></p>
+              <p class="word" id="learnTranslit"></p>
+            </div>
+            <p class="flashcard-hint">(לחץ על הכרטיס כדי לראות את התרגום)</p>
+          </div>
+          <div class="flashcard-back">
+            <div class="section">
+              <p><strong>עברית:</strong></p>
+              <p class="word" id="learnHebrew"></p>
+            </div>
+            <p class="flashcard-hint">(לחץ על הכרטיס כדי לחזור)</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn-warning" id="prevCardBtn" onclick="prevCard()">הכרטיס הקודם</button>
+        <button class="btn-primary" id="nextCardBtn" onclick="nextCard()">הכרטיס הבא</button>
+      </div>
+      
+      <div class="controls" style="margin-top: 10px;">
+        <button class="btn-success" onclick="switchSection('quiz')">עבור לבחינה</button>
+      </div>
+    </div>
+    
+    <!-- Quiz Screen (Initially Hidden) -->
+    <div id="quizScreen" class="hidden">
+      <div class="score-container">
+        <div class="score-item">
+          <span class="score-label">כרטיס</span>
+          <span class="score-value"><span id="currentCard">0</span>/<span id="totalCards">10</span></span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">נכונות</span>
+          <span class="score-value correct" id="correctCount">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">שגיאות</span>
+          <span class="score-value incorrect" id="incorrectCount">0</span>
+        </div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div class="card" id="quizCard">
+        <div class="section">
+          <p><strong>אמהרית:</strong></p>
+          <p class="word" id="amharic"></p>
+        </div>
+        
+        <div class="section">
+          <p><strong>תעתיק:</strong></p>
+          <p class="word" id="translit"></p>
+        </div>
+        
+        <p><strong>מה המילה בעברית?</strong></p>
+        <input type="text" class="answer-input" id="answerInput" placeholder="הקלד את התשובה כאן..." autocomplete="off">
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="controls">
+          <button class="btn-success" id="checkBtn" onclick="checkAnswer()">בדוק תשובה</button>
+          <button class="btn-warning hidden" id="nextBtn" onclick="nextQuestion()">לכרטיס הבא</button>
+          <button class="btn-danger hidden" id="showAnswerBtn" onclick="showCorrectAnswer()">הראה תשובה</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Results Screen (Initially Hidden) -->
+    <div id="resultsScreen" class="results-screen hidden">
+      <h3 class="results-title">תוצאות הבחינה</h3>
+      <div class="results-score"><span id="finalScore">0</span>/10</div>
+      <p id="resultsFeedback"></p>
+      
+      <div class="results-details" id="resultsDetails">
+        <!-- Results will be inserted here -->
+      </div>
+      
+      <div class="controls">
+        <button class="btn-primary" onclick="startQuiz()">בחינה חדשה</button>
+        <button class="btn-warning" onclick="switchSection('learn')">חזרה ללמידה</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Canvas for confetti effect -->
+  <canvas id="confetti-canvas" class="hidden"></canvas>
+
+  <script>
+    // Global variables
+    let allWords = [];          // All available words
+    let filteredWords = [];     // Words filtered by search
+    let quizWords = [];         // Current quiz words (10 at a time)
+    let currentQuestionIndex = 0;
+    let currentLearnIndex = 0;
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+    let userAnswers = [];       // Track user answers for review
+    let quizActive = false;
+    let cardFlipped = false;    // Track if flashcard is flipped
+    
+    // DOM Elements
+    const startScreen = document.getElementById('startScreen');
+    const learnScreen = document.getElementById('learnScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultsScreen = document.getElementById('resultsScreen');
+    const navMenu = document.getElementById('navMenu');
+    const checkBtn = document.getElementById('checkBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const showAnswerBtn = document.getElementById('showAnswerBtn');
+    const flashcard = document.getElementById('flashcard');
+    
+    // Initialize the app
+    function initialize() {
+      try {
+        google.script.run
+          .withSuccessHandler(function(data) {
+            allWords = data;
+            filteredWords = [...allWords]; // Initialize filtered words
+            
+            if (allWords && allWords.length) {
+              document.getElementById('totalCards').textContent = 10;
+              document.getElementById('totalLearnCards').textContent = allWords.length;
+            } else {
+              alert('לא נמצאו כרטיסיות. אנא נסו שוב מאוחר יותר.');
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('Error loading cards:', error);
+            alert('אירעה שגיאה בטעינת הכרטיסים. אנא רעננו את הדף.');
+          })
+          .getWords();
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      }
+    }
+    
+    // Switch between sections (start, learn, quiz, results)
+    function switchSection(section) {
+      // Hide all sections
+      startScreen.classList.add('hidden');
+      learnScreen.classList.add('hidden');
+      quizScreen.classList.add('hidden');
+      resultsScreen.classList.add('hidden');
+      
+      // Show navigation except on start screen
+      if (section !== 'start') {
+        navMenu.classList.remove('hidden');
+        
+        // Update active nav button
+        document.querySelectorAll('.nav-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        if (section === 'learn') {
+          document.getElementById('learnBtn').classList.add('active');
+        } else if (section === 'quiz') {
+          document.getElementById('quizBtn').classList.add('active');
+        }
+      } else {
+        navMenu.classList.add('hidden');
+      }
+      
+      // Show appropriate section
+      if (section === 'start') {
+        startScreen.classList.remove('hidden');
+      } else if (section === 'learn') {
+        learnScreen.classList.remove('hidden');
+        initializeLearnMode();
+      } else if (section === 'quiz') {
+        startQuiz();
+      }
+    }
+    
+    // Initialize learning mode
+    function initializeLearnMode() {
+      currentLearnIndex = 0;
+      document.getElementById('searchBox').value = '';
+      filteredWords = [...allWords];
+      loadLearnCard(0);
+      updateLearnProgress();
+    }
+    
+    // Load a learn card by index
+    function loadLearnCard(index) {
+      if (!filteredWords || filteredWords.length === 0) {
+        document.getElementById('learnAmharic').textContent = 'אין כרטיסים זמינים';
+        document.getElementById('learnTranslit').textContent = '';
+        document.getElementById('learnHebrew').textContent = '';
+        document.getElementById('prevCardBtn').disabled = true;
+        document.getElementById('nextCardBtn').disabled = true;
+        return;
+      }
+      
+      // Handle bounds
+      if (index < 0) index = 0;
+      if (index >= filteredWords.length) index = filteredWords.length - 1;
+      
+      currentLearnIndex = index;
+      const word = filteredWords[index];
+      
+      // Update UI with the current word
+      document.getElementById('learnAmharic').textContent = word[1];
+      document.getElementById('learnTranslit').textContent = word[2];
+      document.getElementById('learnHebrew').textContent = word[0];
+      
+      // Reset card flip state
+      cardFlipped = false;
+      flashcard.classList.remove('flipped');
+      
+      // Update navigation buttons
+      document.getElementById('prevCardBtn').disabled = index <= 0;
+      document.getElementById('nextCardBtn').disabled = index >= filteredWords.length - 1;
+      
+      // Update card counter
+      document.getElementById('currentLearnCard').textContent = index + 1;
+      document.getElementById('totalLearnCards').textContent = filteredWords.length;
+      
+      // Update progress bar
+      updateLearnProgress();
+    }
+    
+    // Update the learning progress bar
+    function updateLearnProgress() {
+      const progress = ((currentLearnIndex + 1) / filteredWords.length) * 100;
+      document.getElementById('learnProgressBar').style.width = `${progress}%`;
+    }
+    
+    // Navigate to next card in learn mode
+    function nextCard() {
+      if (currentLearnIndex < filteredWords.length - 1) {
+        loadLearnCard(currentLearnIndex + 1);
+      }
+    }
+    
+    // Navigate to previous card in learn mode
+    function prevCard() {
+      if (currentLearnIndex > 0) {
+        loadLearnCard(currentLearnIndex - 1);
+      }
+    }
+    
+    // Flip the flashcard
+    function flipCard() {
+      cardFlipped = !cardFlipped;
+      flashcard.classList.toggle('flipped');
+    }
+    
+    // Filter cards based on search input
+    function filterCards() {
+      const searchTerm = document.getElementById('searchBox').value.trim().toLowerCase();
+      
+      if (searchTerm === '') {
+        filteredWords = [...allWords];
+      } else {
+        filteredWords = allWords.filter(word => {
+          const hebrew = word[0].toLowerCase();
+          const amharic = word[1].toLowerCase();
+          const translit = word[2].toLowerCase();
+          
+          return hebrew.includes(searchTerm) || 
+                 amharic.includes(searchTerm) || 
+                 translit.includes(searchTerm);
+        });
+      }
+      
+      // Reset index and load first matching card
+      currentLearnIndex = 0;
+      loadLearnCard(0);
+    }
+    
+    // Start the quiz with 10 random cards
+    function startQuiz() {
+      if (!allWords || allWords.length === 0) {
+        alert('אנא המתינו לטעינת הכרטיסיות.');
+        return;
+      }
+      
+      // Reset quiz state
+      currentQuestionIndex = 0;
+      correctAnswers = 0;
+      incorrectAnswers = 0;
+      userAnswers = [];
+      quizActive = true;
+      
+      // Select 10 random words (or all if less than 10)
+      const numQuestions = Math.min(10, allWords.length);
+      quizWords = [];
+      
+      // Create a copy of allWords to shuffle
+      const shuffledWords = [...allWords];
+      for (let i = shuffledWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
+      }
+      
+      // Take first 10 words
+      quizWords = shuffledWords.slice(0, numQuestions);
+      
+      // Update UI
+      document.getElementById('correctCount').textContent = 0;
+      document.getElementById('incorrectCount').textContent = 0;
+      document.getElementById('currentCard').textContent = 1;
+      document.getElementById('totalCards').textContent = numQuestions;
+      document.getElementById('progressBar').style.width = '0%';
+      
+      // Show quiz screen
+      startScreen.classList.add('hidden');
+      learnScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      resultsScreen.classList.add('hidden');
+      
+      // Show navigation
+      navMenu.classList.remove('hidden');
+      document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('quizBtn').classList.add('active');
+      
+      // Load first question
+      loadQuestion(0);
+    }
+    
+    // Load a question by index
+    function loadQuestion(index) {
+      if (index >= quizWords.length) {
+        showResults();
+        return;
+      }
+      
+      const word = quizWords[index];
+      
+      // Update UI with the current word (Hebrew hidden, Amharic & transliteration shown)
+      document.getElementById('amharic').textContent = word[1];
+      document.getElementById('translit').textContent = word[2]; 
+      
+      // Reset UI elements
+      document.getElementById('answerInput').value = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      
+      // Show check button, hide next button
+      checkBtn.classList.remove('hidden');
+      nextBtn.classList.add('hidden');
+      showAnswerBtn.classList.add('hidden');
+      
+      // Focus on answer input
+      setTimeout(() => {
+        document.getElementById('answerInput').focus();
+      }, 100);
+      
+      // Update progress
+      document.getElementById('currentCard').textContent = index + 1;
+      document.getElementById('progressBar').style.width = `${((index + 1) / quizWords.length) * 100}%`;
+    }
+    
+    // Check the user's answer
+    function checkAnswer() {
+      if (!quizActive) return;
+      
+      const currentWord = quizWords[currentQuestionIndex];
+      const correctAnswer = currentWord[0]; // Hebrew word
+      const userAnswer = document.getElementById('answerInput').value.trim();
+      
+      const isCorrect = isAnswerCorrect(userAnswer, correctAnswer);
+      
+      // Store the answer for review
+      userAnswers.push({
+        hebrew: correctAnswer,
+        amharic: currentWord[1],
+        translit: currentWord[2],
+        userAnswer: userAnswer,
+        isCorrect: isCorrect
+      });
+      
+      // Update scores
+      if (isCorrect) {
+        correctAnswers++;
+        document.getElementById('correctCount').textContent = correctAnswers;
+        document.getElementById('feedback').textContent = 'נכון!';
+        document.getElementById('feedback').className = 'feedback correct';
+      } else {
+        incorrectAnswers++;
+        document.getElementById('incorrectCount').textContent = incorrectAnswers;
+        document.getElementById('feedback').textContent = 'לא נכון';
+        document.getElementById('feedback').className = 'feedback incorrect';
+        showAnswerBtn.classList.remove('hidden');
+      }
+      
+
+      // Show next button, hide check button
+      checkBtn.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+      
+      // Disable input after submission
+      document.getElementById('answerInput').disabled = true;
+    }
+    
+    // Show the correct answer
+    function showCorrectAnswer() {
+      const currentWord = quizWords[currentQuestionIndex];
+      document.getElementById('feedback').textContent = `התשובה הנכונה: ${currentWord[0]}`;
+      document.getElementById('feedback').className = 'feedback';
+      showAnswerBtn.classList.add('hidden');
+    }
+    
+    // Compare user answer with correct answer with some flexibility
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+      // Convert both to lowercase for case-insensitive comparison
+      userAnswer = userAnswer.toLowerCase().trim();
+      correctAnswer = correctAnswer.toLowerCase().trim();
+      
+      // Direct match
+      if (userAnswer === correctAnswer) return true;
+      
+      // Remove nikud/vowels for more flexible matching
+      const userClean = removeNikud(userAnswer);
+      const correctClean = removeNikud(correctAnswer);
+      
+      return userClean === correctClean;
+    }
+    
+    // Function to remove Hebrew nikud (vowel points)
+    function removeNikud(text) {
+      return text.replace(/[\u0591-\u05C7]/g, '').trim();
+    }
+    
+    // Move to the next question
+    function nextQuestion() {
+      if (!quizActive) return;
+      
+      currentQuestionIndex++;
+      
+      // Enable input for next question
+      document.getElementById('answerInput').disabled = false;
+      
+      if (currentQuestionIndex < quizWords.length) {
+        loadQuestion(currentQuestionIndex);
+      } else {
+        showResults();
+      }
+    }
+    
+    // Show quiz results
+    function showResults() {
+      quizActive = false;
+      
+      // Calculate final score and percentage
+      const totalQuestions = quizWords.length;
+      const score = correctAnswers;
+      const percentage = Math.round((score / totalQuestions) * 100);
+      
+      // Update results screen
+      document.getElementById('finalScore').textContent = score;
+      
+      // Generate feedback based on score
+      let feedback = '';
+      if (percentage >= 90) {
+        feedback = 'מצוין! שליטה מעולה באמהרית!';
+        showConfetti(); // Celebrate high scores
+      } else if (percentage >= 70) {
+        feedback = 'כל הכבוד! תוצאה טובה מאוד!';
+      } else if (percentage >= 50) {
+        feedback = 'לא רע! המשיכו לתרגל.';
+      } else {
+        feedback = 'כדאי להמשיך ללמוד ולנסות שוב.';
+      }
+      
+      document.getElementById('resultsFeedback').textContent = feedback;
+      
+      // Generate results details
+      const resultsHTML = userAnswers.map((answer, index) => {
+        const resultClass = answer.isCorrect ? 'result-correct' : 'result-incorrect';
+        let html = `<div class="result-item">
+          <div>
+            <strong>${index + 1}. ${answer.amharic}</strong> (${answer.translit})
+            <br>תשובה נכונה: ${answer.hebrew}
+          </div>
+          <div class="${resultClass}">
+            ${answer.isCorrect ? '✓' : '✗'}
+          </div>
+        </div>`;
+        
+        if (!answer.isCorrect) {
+          html += `<div style="color: #666; margin-bottom: 10px; padding-right: 10px;">
+            התשובה שלך: ${answer.userAnswer || '(ללא תשובה)'}
+          </div>`;
+        }
+        
+        return html;
+      }).join('');
+      
+      document.getElementById('resultsDetails').innerHTML = resultsHTML;
+      
+      // Show results screen
+      quizScreen.classList.add('hidden');
+      resultsScreen.classList.remove('hidden');
+    }
+    
+    // Confetti celebration for high scores
+    function showConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      canvas.classList.remove('hidden');
+      
+      const context = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      const confettiCount = 200;
+      const confettiColors = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#577590'];
+      const confetti = [];
+      
+      // Create confetti particles
+      for (let i = 0; i < confettiCount; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 10 + 5,
+          color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+          speed: Math.random() * 3 + 2,
+          angle: Math.random() * 6.28,
+          spin: Math.random() * 0.2 - 0.1,
+          gravity: Math.random() * 0.5 + 0.5
+        });
+      }
+      
+      let animationFrame;
+      const animate = () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let stillFalling = false;
+        
+        for (let i = 0; i < confetti.length; i++) {
+          const p = confetti[i];
+          
+          context.beginPath();
+          context.moveTo(p.x, p.y);
+          context.lineTo(p.x + p.size, p.y + p.size);
+          context.lineTo(p.x + p.size, p.y);
+          context.closePath();
+          context.fillStyle = p.color;
+          context.fill();
+          
+          p.angle += p.spin;
+          p.y += p.speed;
+          p.x += Math.sin(p.angle) * 2;
+          p.speed += p.gravity / 10;
+          
+          if (p.y < canvas.height) {
+            stillFalling = true;
+          }
+        }
+        
+        if (stillFalling) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          setTimeout(() => {
+            canvas.classList.add('hidden');
+            cancelAnimationFrame(animationFrame);
+          }, 1000);
+        }
+      };
+      
+      animationFrame = requestAnimationFrame(animate);
+      
+      // Hide confetti after 3 seconds regardless
+      setTimeout(() => {
+        canvas.classList.add('hidden');
+        cancelAnimationFrame(animationFrame);
+      }, 5000);
+    }
+    
+    // Handle answer input with Enter key
+    document.getElementById('answerInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (!document.getElementById('checkBtn').classList.contains('hidden')) {
+          checkAnswer();
+        } else if (!document.getElementById('nextBtn').classList.contains('hidden')) {
+          nextQuestion();
+        }
+      }
+    });
+    
+    // Handle window resize for confetti canvas
+    window.addEventListener('resize', function() {
+      const canvas = document.getElementById('confetti-canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    
+    // Initialize the app
+    try {
+      initialize();
+    } catch (e) {
+      console.error('Initialization error:', e);
+      
+      // For testing without Google App Script
+      if (typeof google === 'undefined') {
+        console.log('Running in test mode with sample data');
+        
+        // Sample data for testing
+        allWords = [
+          ['שלום', 'ሰላም', 'selam'],
+          ['תודה', 'አመሰግናለሁ', 'ameseginalehu'],
+          ['בבקשה', 'እባክዎ', 'ebakwo'],
+          ['כן', 'አዎ', 'awo'],
+          ['לא', 'አይ', 'ay'],
+          ['בוקר טוב', 'እንደምን አደሩ', 'endemen aderu'],
+          ['לילה טוב', 'ደህና ይሁኑ', 'dehna yihunu'],
+          ['מה שלומך?', 'እንዴት ነህ?', 'endet neh?'],
+          ['אני שמח', 'ደስተኛ ነኝ', 'destenha neny'],
+          ['אני רעב', 'ተርቤአለሁ', 'terbealehu'],
+          ['מים', 'ውሃ', 'weha'],
+          ['אוכל', 'ምግብ', 'migib'],
+          ['בית', 'ቤት', 'bet'],
+          ['ללכת', 'መሄድ', 'mehed']
+        ];
+        
+        // Initialize with sample data
+        filteredWords = [...allWords];
+        document.getElementById('totalCards').textContent = 10;
+        document.getElementById('totalLearnCards').textContent = allWords.length;
+      }
+    }
+  </script>
+</body>
+</html>
